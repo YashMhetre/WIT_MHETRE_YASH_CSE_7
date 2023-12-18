@@ -1,0 +1,290 @@
+Front-end code for User Authentification is : 
+
+Frontend (Flutter):
+Create a new Flutter project and add necessary dependencies:
+
+In your pubspec.yaml file:
+
+yaml
+Copy code
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+Run flutter pub get to install the dependencies.
+
+Create a Flutter screen for leave application:
+
+You can use Flutter widgets such as TextField, FlatButton, etc., to create your screen. For example:
+
+dart
+Copy code
+// lib/screens/leave_application_screen.dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class LeaveApplicationScreen extends StatefulWidget {
+  @override
+  _LeaveApplicationScreenState createState() => _LeaveApplicationScreenState();
+}
+
+class _LeaveApplicationScreenState extends State<LeaveApplicationScreen> {
+  final startDateController = TextEditingController();
+  final endDateController = TextEditingController();
+  final reasonController = TextEditingController();
+
+  Future<void> applyLeave() async {
+    final response = await http.post(
+      Uri.parse('http://localhost:3000/leave/apply'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'startDate': startDateController.text,
+        'endDate': endDateController.text,
+        'reason': reasonController.text,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // Handle successful leave application
+    } else {
+      // Handle leave application failure
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Apply for Leave'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(
+              controller: startDateController,
+              decoration: InputDecoration(labelText: 'Start Date'),
+            ),
+            TextField(
+              controller: endDateController,
+              decoration: InputDecoration(labelText: 'End Date'),
+            ),
+            TextField(
+              controller: reasonController,
+              decoration: InputDecoration(labelText: 'Reason'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: applyLeave,
+              child: Text('Apply Leave'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+Front-end code for Leave Application is : 
+
+
+Frontend (Flutter):
+Create a new Flutter project and add necessary dependencies:
+
+In your pubspec.yaml file:
+
+yaml
+Copy code
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+Run flutter pub get to install the dependencies.
+
+Create a Flutter screen for leave status:
+
+You can use Flutter widgets such as Text, FutureBuilder, etc., to create your screen. For example:
+
+dart
+Copy code
+// lib/screens/leave_status_screen.dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class LeaveStatusScreen extends StatefulWidget {
+  final String leaveId;
+
+  LeaveStatusScreen({required this.leaveId});
+
+  @override
+  _LeaveStatusScreenState createState() => _LeaveStatusScreenState();
+}
+
+class _LeaveStatusScreenState extends State<LeaveStatusScreen> {
+  Future<String> getLeaveStatus() async {
+    final response = await http.get(
+      Uri.parse('http://localhost:3000/leave/status/${widget.leaveId}'),
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load leave status');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Leave Status'),
+      ),
+      body: Center(
+        child: FutureBuilder<String>(
+          future: getLeaveStatus(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return CircularProgressIndicator();
+            } else if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            } else {
+              return Text('Leave Status: ${snapshot.data}');
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+
+Front-end code for Leave Status and Leave History is : 
+
+
+Frontend (Flutter):
+Create a new Flutter project and add necessary dependencies:
+
+In your pubspec.yaml file:
+
+yaml
+Copy code
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+Run flutter pub get to install the dependencies.
+
+Create a Flutter screen for leave history:
+
+You can use Flutter widgets such as ListView, FutureBuilder, etc., to create your screen. For example:
+
+dart
+Copy code
+// lib/screens/leave_history_screen.dart
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+class LeaveHistoryScreen extends StatefulWidget {
+  @override
+  _LeaveHistoryScreenState createState() => _LeaveHistoryScreenState();
+}
+
+class _LeaveHistoryScreenState extends State<LeaveHistoryScreen> {
+  Future<List<dynamic>> getLeaveHistory() async {
+    final response = await http.get(
+      Uri.parse('http://localhost:3000/leave/history'),
+    );
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to load leave history');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Leave History'),
+      ),
+      body: FutureBuilder<List<dynamic>>(
+        future: getLeaveHistory(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          } else {
+            return ListView.builder(
+              itemCount: snapshot.data!.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text('Start Date: ${snapshot.data![index]['startDate']}'),
+                  subtitle: Text('End Date: ${snapshot.data![index]['endDate']}'),
+                  trailing: Text('Status: ${snapshot.data![index]['status']}'),
+                );
+              },
+            );
+          }
+        },
+      ),
+    );
+  }
+}
+
+
+
+
+Front-end code for Role based access control : 
+
+
+Frontend (Flutter):
+Create a new Flutter project and add necessary dependencies:
+
+In your pubspec.yaml file:
+
+yaml
+Copy code
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^0.13.3
+Run flutter pub get to install the dependencies.
+
+Create Flutter screens for manager actions:
+
+You can use Flutter widgets such as ListView, FutureBuilder, etc., to create your screens. For example:
+
+dart
+Copy code
+// lib/screens/manager_team_screen.dart
+// Implementation of viewing team members
+dart
+Copy code
+// lib/screens/leave_approval_screen.dart
+// Implementation of leave approval/denial
+dart
+Copy code
+// lib/screens/add_employee_screen.dart
+// Implementation of adding a new employee
+dart
+Copy code
+// lib/screens/delete_employee_screen.dart
+// Implementation of deleting an employee
+
+
+
+
+
+
+
+
+
+
